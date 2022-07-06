@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Collections;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 
 namespace GestorCMD
 {
+    [System.Serializable]
     internal class Program
     {
         static List<IEstoque> produtos = new List<IEstoque>();
@@ -26,6 +31,7 @@ namespace GestorCMD
                 switch (escolha)
                 {
                     case Menu.Listar:
+                        Listagem();
                         break;
                     case Menu.Adicionar:
                         Cadastro();
@@ -44,6 +50,15 @@ namespace GestorCMD
             }
         }
 
+        static void Listagem()
+        {
+            Console.WriteLine("Lista de Produtos");
+            foreach(IEstoque produtos in produtos)
+            {
+                produtos.Exibir();
+            }
+        }
+
         enum MenuCadastro { ProdutoFisico = 1, Ebook, Curso }
         static void Cadastro()
         {
@@ -59,8 +74,10 @@ namespace GestorCMD
                     CadastroPF();
                     break;
                 case MenuCadastro.Ebook:
+                    CadastroEbook();
                     break;
                 case MenuCadastro.Curso:
+                    CadastroCurso();
                     break;
             }
         }
@@ -79,7 +96,73 @@ namespace GestorCMD
 
             ProdutoFisico pf = new ProdutoFisico(nome, frete, preco);
             produtos.Add(pf);
+            Salvar();
+        }
+
+        static void CadastroEbook()
+        {
+            Console.WriteLine("Nome:");
+            string nome = Console.ReadLine();
+
+            Console.WriteLine("Autor:");
+            string autor = Console.ReadLine();
+
+            Console.WriteLine("Preço:");
+            float preco = float.Parse(Console.ReadLine());
+
+            Ebook eb = new Ebook(nome, preco, autor);
+            produtos.Add(eb);
+            Salvar();
+        }
+
+        static void CadastroCurso()
+        {
+            Console.WriteLine("Nome:");
+            string nome = Console.ReadLine();
+
+            Console.WriteLine("Autor:");
+            string autor = Console.ReadLine();
+
+            Console.WriteLine("Preço:");
+            float preco = float.Parse(Console.ReadLine());
+
+            Curso cb = new Curso(nome, autor, preco);
+            produtos.Add(cb);
+            Salvar();
+        }
+
+        static void Salvar()
+        {
+            FileStream stream = new FileStream("produtor.dat", FileMode.OpenOrCreate);
+            BinaryFormatter encoder = new BinaryFormatter();
+
+            encoder.Serialize(stream, produtos);
+
+            stream.Close();
+        }
+
+        static void Carregar()
+        {
+
+            FileStream stream=new FileStream("produtos.dat",FileMode.OpenOrCreate);
+            BinaryFormatter encoder=new BinaryFormatter();
+            try
+           {
+                produtos = (List<IEstoque>)encoder.Deserialize(stream);
+                if(produtos == null)
+                {
+                    produtos = new List<IEstoque>();
+                }
+           }
+                
+            catch(Exception e)
+            {
+                Console.WriteLine("Erro");
+                produtos = new List<IEstoque>();
+                Console.ReadLine();
+                
+            }
+            stream.Close();
         }
     }
 }
-;

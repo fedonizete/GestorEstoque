@@ -6,16 +6,18 @@ using System.Threading.Tasks;
 
 namespace GestorCMD
 {
+    [System.Serializable]
     class Curso : Produto, IEstoque
     {
         public string autor;
         public int vagas;
 
-        public Curso(string nome, float preco, string autor)
+        public Curso(string nome, string autor, float preco)
         {
             this.nome = nome;
-            this.preco = preco; 
             this.autor = autor;
+            this.preco = preco; 
+            
         }
 
         public void AdicionarEntrada()

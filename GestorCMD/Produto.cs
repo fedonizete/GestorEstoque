@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace GestorCMD
 {
+    [System.Serializable]
     abstract class Produto
     {
         public string nome;
